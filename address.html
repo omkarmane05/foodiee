@@ -3,70 +3,121 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Foodie Map</title>
+    <title>Foodie Map | Find Your Favorite Restaurants</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
-        #map {
-            height: 400px;
-            width: 100%;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
         }
-        #search-box {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
+
+        body {
+            background: #f7f7f7;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1000px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #ff4757;
+            padding: 15px;
+            color: white;
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .header i {
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .search-bar {
+            display: flex;
+            padding: 15px;
+            background: #fff;
+        }
+
+        .search-bar input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px 0 0 5px;
+            font-size: 16px;
+            outline: none;
+        }
+
+        .search-bar button {
+            padding: 12px 15px;
+            background: #ff4757;
+            color: white;
+            border: none;
+            border-radius: 0 5px 5px 0;
+            cursor: pointer;
             font-size: 16px;
         }
+
+        .search-bar button:hover {
+            background: #e84118;
+        }
+
+        #map {
+            height: 500px;
+            width: 100%;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                width: 100%;
+            }
+
+            .header {
+                font-size: 18px;
+            }
+
+            .search-bar input {
+                font-size: 14px;
+            }
+
+            .search-bar button {
+                font-size: 14px;
+            }
+        }
     </style>
-    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places"></script>
 </head>
 <body>
-    <input id="search-box" type="text" placeholder="Search for a location...">
-    <div id="map"></div>
 
-    <script>
-        function initMap() {
-            const map = new google.maps.Map(document.getElementById("map"), {
-                center: { lat: 28.7041, lng: 77.1025 }, // Default to Delhi
-                zoom: 13,
-            });
+    <div class="container">
+        <div class="header">
+            <span>Find Restaurants Near You</span>
+            <i class="fas fa-map-marker-alt"></i>
+        </div>
 
-            const input = document.getElementById("search-box");
-            const searchBox = new google.maps.places.SearchBox(input);
+        <div class="search-bar">
+            <input id="search-box" type="text" placeholder="Search for a location...">
+            <button><i class="fas fa-search"></i></button>
+        </div>
 
-            map.addListener("bounds_changed", () => {
-                searchBox.setBounds(map.getBounds());
-            });
+        <div id="map"></div>
+    </div>
 
-            let markers = [];
+    
 
-            searchBox.addListener("places_changed", () => {
-                const places = searchBox.getPlaces();
-                if (places.length === 0) return;
-
-                markers.forEach(marker => marker.setMap(null));
-                markers = [];
-
-                const bounds = new google.maps.LatLngBounds();
-                places.forEach(place => {
-                    if (!place.geometry) return;
-                    
-                    markers.push(new google.maps.Marker({
-                        map,
-                        title: place.name,
-                        position: place.geometry.location,
-                    }));
-
-                    if (place.geometry.viewport) {
-                        bounds.union(place.geometry.viewport);
-                    } else {
-                        bounds.extend(place.geometry.location);
-                    }
-                });
-                map.fitBounds(bounds);
-            });
-        }
-    </script>
-    <script>
-        window.onload = initMap;
-    </script>
 </body>
 </html>
