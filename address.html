@@ -4,7 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Foodie Map | Find Your Favorite Restaurants</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
     <style>
         * {
             margin: 0;
@@ -14,7 +17,7 @@
         }
 
         body {
-            background: #f7f7f7;
+            background: linear-gradient(135deg, #ff4757, #ff6b81);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -27,8 +30,8 @@
             width: 90%;
             max-width: 1000px;
             background: #fff;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
             overflow: hidden;
         }
 
@@ -37,14 +40,14 @@
             align-items: center;
             justify-content: space-between;
             background: #ff4757;
-            padding: 15px;
+            padding: 18px;
             color: white;
-            font-size: 22px;
+            font-size: 24px;
             font-weight: bold;
         }
 
         .header i {
-            font-size: 24px;
+            font-size: 26px;
             cursor: pointer;
         }
 
@@ -56,21 +59,21 @@
 
         .search-bar input {
             flex: 1;
-            padding: 12px;
-            border: 1px solid #ddd;
+            padding: 14px;
+            border: 2px solid #ddd;
             border-radius: 5px 0 0 5px;
             font-size: 16px;
             outline: none;
         }
 
         .search-bar button {
-            padding: 12px 15px;
+            padding: 14px 18px;
             background: #ff4757;
             color: white;
             border: none;
             border-radius: 0 5px 5px 0;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 18px;
         }
 
         .search-bar button:hover {
@@ -78,26 +81,37 @@
         }
 
         #map {
-            height: 500px;
+            height: 400px;
             width: 100%;
         }
 
-        @media (max-width: 768px) {
-            .container {
-                width: 100%;
-            }
+        .categories {
+            padding: 20px;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+        }
 
-            .header {
-                font-size: 18px;
-            }
+        .category {
+            background: #ff6b81;
+            color: white;
+            padding: 12px 20px;
+            margin: 10px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: 0.3s;
+        }
 
-            .search-bar input {
-                font-size: 14px;
-            }
+        .category:hover {
+            background: #ff4757;
+        }
 
-            .search-bar button {
-                font-size: 14px;
-            }
+        .details {
+            display: none;
+            padding: 15px;
+            background: #f8f8f8;
+            border-left: 3px solid #ff4757;
         }
     </style>
 </head>
@@ -105,19 +119,54 @@
 
     <div class="container">
         <div class="header">
-            <span>Fast, Fresh & Right at Your Doorstep!</span>
+            <span>Find Your Favorite Food!</span>
             <i class="fas fa-map-marker-alt"></i>
         </div>
 
         <div class="search-bar">
             <input id="search-box" type="text" placeholder="Search for a location...">
-            <button><i class="fas fa-search"></i></button>
+            <button id="search-btn"><i class="fas fa-search"></i></button>
         </div>
 
         <div id="map"></div>
-    </div>
 
-    
+        
+
+    <script>
+        function toggleDetails(index) {
+            $(".details").slideUp(); 
+            $(".details").eq(index).slideToggle();
+        }
+
+        // Initialize Map
+        var map = L.map('map').setView([20.5937, 78.9629], 5); // Default: India
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Search Functionality
+        document.getElementById("search-btn").addEventListener("click", function() {
+            let location = document.getElementById("search-box").value;
+            if (location) {
+                fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${location}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.length > 0) {
+                        let lat = data[0].lat;
+                        let lon = data[0].lon;
+                        map.setView([lat, lon], 14);
+                        L.marker([lat, lon]).addTo(map)
+                            .bindPopup(`<b>${location}</b>`).openPopup();
+                    } else {
+                        alert("Location not found!");
+                    }
+                });
+            } else {
+                alert("Please enter a location.");
+            }
+        });
+    </script>
 
 </body>
 </html>
