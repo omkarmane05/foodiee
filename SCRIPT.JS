@@ -73,3 +73,18 @@ function addToCart(itemName) {
 
     xhr.send("item_name=" + encodeURIComponent(itemName));
 }
+document.addEventListener("DOMContentLoaded", function () {
+    const profileBtn = document.getElementById("profile-btn");
+    const profileMenu = document.getElementById("profile-menu");
+
+    profileBtn.addEventListener("click", function () {
+        profileMenu.classList.toggle("active");
+    });
+
+    // Close menu when clicking outside
+    document.addEventListener("click", function (event) {
+        if (!profileBtn.contains(event.target) && !profileMenu.contains(event.target)) {
+            profileMenu.classList.remove("active");
+        }
+    });
+});
